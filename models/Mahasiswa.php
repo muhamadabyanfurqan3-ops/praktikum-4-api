@@ -52,22 +52,22 @@ jurusan = ? WHERE id = ?";
         return false;
     }
 
-public function sort($field, $order) {
+    public function search($keyword)
+    {
 
-    $allowed_fields = ['id', 'nama', 'npm', 'jurusan'];
+        $query = "SELECT * FROM " . $this->table_name . " 
+              WHERE nama LIKE :keyword 
+              OR npm LIKE :keyword 
+              OR jurusan LIKE :keyword
+              ORDER BY id DESC";
 
-    if(!in_array($field, $allowed_fields)) {
-        $field = 'id';
+        $stmt = $this->conn->prepare($query);
+
+        $keyword = "%{$keyword}%";
+        $stmt->bindParam(":keyword", $keyword);
+
+        $stmt->execute();
+
+        return $stmt;
     }
-
-    $order = strtolower($order) === 'desc' ? 'DESC' : 'ASC';
-
-    $query = "SELECT * FROM " . $this->table_name . " 
-              ORDER BY $field $order";
-
-    $stmt = $this->conn->prepare($query);
-    $stmt->execute();
-
-    return $stmt;
-}
 }
